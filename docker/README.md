@@ -49,15 +49,46 @@ docker run -it ubuntu bash
 ## 5. Build and Run a Custom Image with Dockerfile
 ### Example Dockerfile
 ```dockerfile
-FROM ubuntu:latest
-RUN apt-get update && apt-get install -y curl
-CMD ["echo", "Hello from custom image!"]
+# Use official Python image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy app code
+COPY app.py .
+
+# Install Flask
+RUN pip install flask
+
+# Expose port
+EXPOSE 5000
+
+# Run the app
+CMD ["python", "app.py"]
+```
+
+### Web App (app.py)
+```python
+from flask import Flask
+
+app = Flask(__name__)
+counter = 0
+
+@app.route('/')
+def hello():
+    global counter
+    counter += 1
+    return f"Hello! This page has been visited {counter} times."
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 ```
 
 ### Build and Run
 ```bash
-docker build -t my-custom-image .
-docker run my-custom-image
+docker build -t custom-image .
+docker run custom-image
 ```
 ---
 ## 6. Clean Up (Stop and Delete)
